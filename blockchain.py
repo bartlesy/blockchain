@@ -13,7 +13,7 @@ class Blockchain(object):
         self.new_block(previous_hash=1, proof=100)
 
 
-    def new_block(self, proof, previous_hash=None):
+    def new_block(self, proof: int, previous_hash: str=None) -> dict:
         """
         Create a new block in the blockchain
 
@@ -35,7 +35,7 @@ class Blockchain(object):
         return block
 
 
-    def new_transaction(self, sender, recipient, amount):
+    def new_transaction(self, sender: str, recipient: str, amount: float):
 	"""
         Creates a new transaction to go into the next mined last_block
 
@@ -53,7 +53,7 @@ class Blockchain(object):
         return self.last_block['index'] + 1
 
     @staticmethod
-    def hash(block):
+    def hash(block: dict):
         """
         Create a SHA-256 hash of a block
 
@@ -68,5 +68,34 @@ class Blockchain(object):
     @property
     def last_block(self):
         return self.chain[-1]
+
+    def proof_of_work(self, last_proof: int):
+        """
+        Simple PoW:
+            - find a number p` S.T. hash(pp`) contains 4 leading zeros, where p is the previous p`
+            - p is the previous proof, and p` is the new proof
+
+        :param last_proof[Int]:
+        :return Int:
+        """
+
+        proof = 0
+        while not self.valid_proof(last_proof, proof):
+            proof += 1
+
+        return proof
+
+    @staticmethod
+    def valid_proof(last_proof: int, proof: int):
+        """
+        Validates the proof: does hash(last_proof, proof) contain 4 leading zero
+
+        :param last_proof[Int]: Prev proof
+        :param proof[Int]: current proof
+        :return Bool: True if correct else false
+        """
+        guess = '%d'.encode() % (last_proof * proof)
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return gues_hash.startswith('0000')
 
 
