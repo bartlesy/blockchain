@@ -17,7 +17,7 @@ app = Flask(__name__)
 node_id = str(uuid4()).replace('-', '')
 
 
-@app.route('./mine', methods=['GET'])
+@app.route('/mine', methods=['GET'])
 def mine():
     # run the PoW algo to get the next proof
     last_block = blockchain.last_block
@@ -28,7 +28,7 @@ def mine():
     # sender is "0" to signify that this is a newly minted coin
     blockchain.new_transaction(
         sender="0",
-        receipient=node_identifier,
+        recipient=node_id,
         amount=1
     )
 
@@ -40,7 +40,7 @@ def mine():
         "index": block["index"],
         "transactions": block['transactions'],
         "proof": block['proof'],
-        "previous_hash": block["prev_hash"]
+        "previous_hash": block["previous_hash"]
     }
     return jsonify(response), 200
 

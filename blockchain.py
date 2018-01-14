@@ -12,7 +12,6 @@ class Blockchain(object):
         # create the gensis block
         self.new_block(previous_hash=1, proof=100)
 
-
     def new_block(self, proof: int, previous_hash: str=None) -> dict:
         """
         Create a new block in the blockchain
@@ -34,16 +33,15 @@ class Blockchain(object):
         self.chain.append(block)
         return block
 
-
     def new_transaction(self, sender: str, recipient: str, amount: float):
-	"""
+        """
         Creates a new transaction to go into the next mined last_block
 
         :param sender[String]: Address of the Sender
         :param receipient[String]: Address of the recipient
         :param amount[Float]: Amount
         :return Int: Index of the block that will hold this transaction
-	"""
+        """
         self.current_transactions.append({
             'sender': sender,
             'recipient': recipient,
@@ -97,5 +95,3 @@ class Blockchain(object):
         guess = '%d'.encode() % (last_proof * proof)
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash.startswith('0000')
-
-
