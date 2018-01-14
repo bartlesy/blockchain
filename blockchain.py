@@ -96,6 +96,6 @@ class Blockchain(object):
         """
         guess = '%d'.encode() % (last_proof * proof)
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return gues_hash.startswith('0000')
+        return guess_hash.startswith('0000')
 
 
