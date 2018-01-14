@@ -6,7 +6,7 @@ from textwrap import dedent
 from time import time
 from uuid import uuid4
 
-from flask import Flask
+from flask import Flask, jsonify, request
 
 from blockchain import Blockchain
 
@@ -19,7 +19,30 @@ node_id = str(uuid4()).replace('-', '')
 
 @app.route('./mine', methods=['GET'])
 def mine():
-    return "we'll mine a new block"
+    # run the PoW algo to get the next proof
+    last_block = blockchain.last_block
+    last_proof = last_block['proof']
+    proof = blockchain.proof_of_work(last_proof)
+
+    # create and receive reward for finding the proof
+    # sender is "0" to signify that this is a newly minted coin
+    blockchain.new_transaction(
+        sender="0",
+        receipient=node_identifier,
+        amount=1
+    )
+
+    # forge the new block by adding it to the chain
+    prev_hash = blockchain.hash(last_block)
+    block = blockchain.new_block(proof, prev_hash)
+    response = {
+        'message': "New block forged",
+        "index": block["index"],
+        "transactions": block['transactions'],
+        "proof": block['proof'],
+        "previous_hash": block["prev_hash"]
+    }
+    return jsonify(response), 200
 
 
 @app.route('/transactions/new', methods=['POST'])
