@@ -14,7 +14,7 @@ class Blockchain(object):
         # create the gensis block
         self.new_block(previous_hash=1, proof=100)
 
-    def new_block(self, proof: int, previous_hash: str=None) -> dict:
+    def new_block(self, proof: int, previous_hash: str = None) -> dict:
         """
         Create a new block in the blockchain
 
@@ -24,11 +24,11 @@ class Blockchain(object):
         """
 
         block = {
-            'index': len(self.chain) + 1,
-            'timestamp': time(),
-            'transactions': self.current_transactions,
-            'proof': proof,
-            'previous_hash': previous_hash or self.hash(self.chain[-1])
+            "index": len(self.chain) + 1,
+            "timestamp": time(),
+            "transactions": self.current_transactions,
+            "proof": proof,
+            "previous_hash": previous_hash or self.hash(self.chain[-1]),
         }
 
         self.current_transactions = []
@@ -44,13 +44,11 @@ class Blockchain(object):
         :param amount[Float]: Amount
         :return Int: Index of the block that will hold this transaction
         """
-        self.current_transactions.append({
-            'sender': sender,
-            'recipient': recipient,
-            'amount': amount
-        })
+        self.current_transactions.append(
+            {"sender": sender, "recipient": recipient, "amount": amount}
+        )
 
-        return self.last_block['index'] + 1
+        return self.last_block["index"] + 1
 
     def register_node(self, address: str):
         """
@@ -105,9 +103,9 @@ class Blockchain(object):
         :param proof[Int]: current proof
         :return Bool: True if correct else false
         """
-        guess = '%d'.encode() % (last_proof * proof)
+        guess = "%d".encode() % (last_proof * proof)
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return guess_hash.startswith('0000')
+        return guess_hash.startswith("0000")
 
     def valid_chain(self, chain: list) -> bool:
         """
@@ -118,15 +116,15 @@ class Blockchain(object):
         """
 
         for last_block, block in zip(chain, chain[1:]):
-            print(f'{last_block}')
-            print(f'{block}')
+            print(f"{last_block}")
+            print(f"{block}")
             print("\n----------------\n")
             # check that the hash of the block is correct
-            if block['previous_hash'] != self.hash(last_block['proof'], block['proof']):
+            if block["previous_hash"] != self.hash(last_block["proof"], block["proof"]):
                 return False
 
             # check that PoW is correct
-            if not self.valid_proof(last_block['proof'], block['proof']):
+            if not self.valid_proof(last_block["proof"], block["proof"]):
                 return False
 
         return True
@@ -147,11 +145,11 @@ class Blockchain(object):
 
         # grab and verify all the chains from all the nodes in the network
         for node in neighbors:
-            response = requests.get(f'http://{node}/chain')
+            response = requests.get(f"http://{node}/chain")
 
             if response.status_code == 200:
-                length = response.json()['length']
-                chain = response.json()['chain']
+                length = response.json()["length"]
+                chain = response.json()["chain"]
 
                 # check if the length is longer and the chain is valid
                 if length > max_length and self.valid_chain(chain):
@@ -162,4 +160,3 @@ class Blockchain(object):
             self.chain = new_chain
             return True
         return False
-
